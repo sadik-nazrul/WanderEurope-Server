@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5007;
 
@@ -15,7 +16,6 @@ app.get('/', (req, res) => {
 
 // MongoDB Code Start
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nymxsdl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -27,6 +27,7 @@ const client = new MongoClient(uri, {
     }
 });
 
+// Places API
 const wanderEuropeDb = client.db('wanderEurope');
 const places = wanderEuropeDb.collection('places');
 const subscriber = wanderEuropeDb.collection('subscriber');
@@ -36,7 +37,7 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-        // Places API
+
         // Get places
         app.get('/places', async (req, res) => {
             const cursor = places.find();
@@ -44,13 +45,34 @@ async function run() {
             res.send(result);
         });
 
-        // Get place
+        // Get single place
         app.get('/places/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await places.findOne(query);
+            // console.log(result);
             res.send(result);
         });
+
+        // Get places by country (case insensitive)
+        app.get('/places/:countryname', async (req, res) => {
+            const countryname = req.params.countryname;
+            const cursor = places.find({ country: new RegExp(`^${countryname}$`, 'i') });
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+
+        // Get places by username (case insensitive)
+        app.get('/places/user/:username', async (req, res) => {
+            const username = req.params.username;
+            const cursor = places.find({ userName: new RegExp(`^${username}$`, 'i') });
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+
+
 
         // Add place
         app.post('/places', async (req, res) => {
@@ -90,7 +112,7 @@ async function run() {
             }
             const result = await places.updateOne(filter, place, options);
             res.send(result);
-        })
+        });
 
 
 
