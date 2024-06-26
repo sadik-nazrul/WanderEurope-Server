@@ -54,6 +54,7 @@ async function run() {
             res.send(result);
         });
 
+
         // Get places by country (case insensitive)
         app.get('/places/:countryname', async (req, res) => {
             const countryname = req.params.countryname;
@@ -68,6 +69,15 @@ async function run() {
             const username = req.params.username;
             const cursor = places.find({ userName: new RegExp(`^${username}$`, 'i') });
             const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        // Get places by username (case insensitive)
+        app.get('/places/user/:username/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await places.findOne(query);
+            // console.log(result);
             res.send(result);
         });
 
