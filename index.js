@@ -36,7 +36,7 @@ const countries = wanderEuropeDb.collection('countries');
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        client.connect();
 
 
         // Get places
@@ -57,7 +57,7 @@ async function run() {
 
 
         // Get places by country (case insensitive)
-        app.get('/places/:countryname', async (req, res) => {
+        app.get('/places/place/:countryname', async (req, res) => {
             const countryname = req.params.countryname;
             const cursor = places.find({ country: new RegExp(`^${countryname}$`, 'i') });
             const result = await cursor.toArray();
