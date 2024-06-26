@@ -31,6 +31,7 @@ const client = new MongoClient(uri, {
 const wanderEuropeDb = client.db('wanderEurope');
 const places = wanderEuropeDb.collection('places');
 const subscriber = wanderEuropeDb.collection('subscriber');
+const countries = wanderEuropeDb.collection('countries');
 
 async function run() {
     try {
@@ -77,12 +78,17 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await places.findOne(query);
-            // console.log(result);
             res.send(result);
         });
 
-
-
+        // Delete place
+        app.delete('/places/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await places.deleteOne(query);
+            // console.log(result);
+            res.send(result);
+        })
 
         // Add place
         app.post('/places', async (req, res) => {
@@ -94,6 +100,8 @@ async function run() {
                 location: newPlace.location,
                 cost: newPlace.cost,
                 seasonality: newPlace.seasonality,
+                time: newPlace.time,
+                visitor: newPlace.visitor,
                 shortDesc: newPlace.shortDesc,
                 userEmail: newPlace.userEmail,
                 userName: newPlace.userName,
@@ -117,6 +125,8 @@ async function run() {
                     location: updatePlace.location,
                     cost: updatePlace.cost,
                     seasonality: updatePlace.seasonality,
+                    time: updatePlace.time,
+                    visitor: updatePlace.visitor,
                     shortDesc: updatePlace.shortDesc,
                 }
             }
@@ -126,8 +136,15 @@ async function run() {
 
 
 
+        // Coutry Api
+        // Get countries
+        app.get('/countries', async(req, res) => {
+            const cursor = countries.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
-
+        
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
