@@ -32,6 +32,7 @@ const wanderEuropeDb = client.db('wanderEurope');
 const places = wanderEuropeDb.collection('places');
 const subscriber = wanderEuropeDb.collection('subscriber');
 const countries = wanderEuropeDb.collection('countries');
+const blogs = wanderEuropeDb.collection('blogs');
 
 async function run() {
     try {
@@ -131,6 +132,7 @@ async function run() {
                 }
             }
             const result = await places.updateOne(filter, place, options);
+            
             res.send(result);
         });
 
@@ -143,6 +145,26 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         });
+
+        // Bologs api
+        // Get blogs
+        app.get('/blogs', async(req, res) => {
+            const cursor = blogs.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+        // Post blog
+        app.post('/blogs', async(req, res) => {
+            const newBlog = req.body;
+            const blog = {
+                featured_img: newBlog.featured_img,
+                title: newBlog.title,
+                content: newBlog.content
+            }
+            const blogs = wanderEuropeDb.collection('blogs');
+            const result = await blogs.insertOne(blog);
+            res.send(result);
+        })
 
         
         // Send a ping to confirm a successful connection
