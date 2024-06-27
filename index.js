@@ -152,7 +152,16 @@ async function run() {
             const cursor = blogs.find();
             const result = await cursor.toArray();
             res.send(result);
-        })
+        });
+
+        // Get single blog
+        app.get('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await blogs.findOne(query);
+            res.send(result);
+        });
+
         // Post blog
         app.post('/blogs', async(req, res) => {
             const newBlog = req.body;
@@ -164,7 +173,7 @@ async function run() {
             const blogs = wanderEuropeDb.collection('blogs');
             const result = await blogs.insertOne(blog);
             res.send(result);
-        })
+        });
 
         
         // Send a ping to confirm a successful connection
