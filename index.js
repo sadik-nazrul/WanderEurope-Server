@@ -52,7 +52,6 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await places.findOne(query);
-            // console.log(result);
             res.send(result);
         });
 
@@ -87,7 +86,6 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await places.deleteOne(query);
-            // console.log(result);
             res.send(result);
         })
 
